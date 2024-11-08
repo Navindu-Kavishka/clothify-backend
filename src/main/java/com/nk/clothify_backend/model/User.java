@@ -1,7 +1,9 @@
-package com.nk.clothify_backend.entity;
+package com.nk.clothify_backend.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.nk.clothify_backend.model.PaymentInfomation;
+import com.nk.clothify_backend.entity.AddressEntity;
+import com.nk.clothify_backend.entity.RatingEntity;
+import com.nk.clothify_backend.entity.ReviewEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,15 +13,13 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity
-@Table(name = "user")
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserEntity {
+public class User {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+
     private Long id;
     private String firstName;
     private String lastName;
@@ -28,20 +28,13 @@ public class UserEntity {
     private String role;
     private String phoneNumber;
 
-    @OneToMany(mappedBy = "userEntity", cascade = CascadeType.ALL)
+
     private List<AddressEntity> addressEntities = new ArrayList<>();
 
-    @Embedded
-    @ElementCollection
-    @CollectionTable(name = "payment_infomation",joinColumns = @JoinColumn(name = "user_id"))
     private List<PaymentInfomation> paymentInfomation = new ArrayList<>();
 
-    @OneToMany(mappedBy = "userEntity", cascade = CascadeType.ALL)
-    @JsonIgnore
     private List<RatingEntity> ratingEntities = new ArrayList<>();
 
-    @OneToMany(mappedBy = "userEntity", cascade = CascadeType.ALL)
-    @JsonIgnore
     private List<ReviewEntity> reviewEntities = new ArrayList<>();
 
     private LocalDateTime createdAt;
