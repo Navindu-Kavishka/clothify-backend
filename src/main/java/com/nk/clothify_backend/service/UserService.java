@@ -3,10 +3,11 @@ package com.nk.clothify_backend.service;
 
 import com.nk.clothify_backend.entity.UserEntity;
 import com.nk.clothify_backend.exception.UserException;
+import com.nk.clothify_backend.model.User;
 
 public interface UserService {
 
-    public UserEntity findUserById(Long userId) throws UserException;
+    public User findUserById(Long userId) throws UserException;
 
-    public UserEntity findUserProfileByJwt(String jwt) throws UserException;
+    public User findUserProfileByJwt(String jwt) throws UserException;
 }
