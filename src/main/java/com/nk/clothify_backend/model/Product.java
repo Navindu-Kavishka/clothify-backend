@@ -38,7 +38,6 @@ public class Product {
     private String brand;
     private String color;
 
-    @Embedded
     @ElementCollection
     private Set<Size> sizes = new HashSet<>();
 
