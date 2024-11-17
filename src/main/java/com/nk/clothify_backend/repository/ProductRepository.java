@@ -25,4 +25,5 @@ public interface ProductRepository extends JpaRepository<ProductEntity,Long> {
                                               @Param("sort") String sort);
 
 
+    List<ProductEntity> findByCategoryName(String category);
 }

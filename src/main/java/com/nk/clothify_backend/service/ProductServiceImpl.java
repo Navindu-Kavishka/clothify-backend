@@ -69,11 +69,11 @@ public class ProductServiceImpl implements ProductService{
         product.setTitle(req.getTitle());
         product.setColor(req.getColor());
         product.setDescription(req.getDescription());
-        product.setDiscountedPrice(Double.parseDouble(req.getDiscountedPrice()));
-        product.setDiscountPercentage(Double.parseDouble(req.getDiscountPercentage()));
+        product.setPrice(req.getPrice());
+        product.setDiscountedPrice(req.getDiscountedPrice());
+        product.setDiscountPercentage(req.getDiscountPercentage());
         product.setImageUrl(req.getImageUrl());
         product.setBrand(req.getBrand());
-        product.setPrice(product.getPrice());
         product.setSizes(req.getSize());
         product.setQuantity(req.getQuantity());
         product.setCategoryEntity(thirdLevel);
@@ -86,7 +86,9 @@ public class ProductServiceImpl implements ProductService{
 
     @Override
     public String deleteProduct(Long productId) throws ProductException {
-        ProductEntity productEntity = mapper.convertValue(findProductById(productId),ProductEntity.class);
+
+        Product product = findProductById(productId);
+        ProductEntity productEntity = mapper.convertValue(product, ProductEntity.class);
         
         productRepository.delete(productEntity);
         return "Product deleted Successfully..."; 
@@ -96,7 +98,6 @@ public class ProductServiceImpl implements ProductService{
     public Product updateProduct(Long productId, Product req) throws ProductException {
 
         Product productById = findProductById(productId);
-
         productById.setQuantity(req.getQuantity());
 
         return mapper.convertValue(
@@ -118,9 +119,22 @@ public class ProductServiceImpl implements ProductService{
     }
 
     @Override
-    public List<Product> findProductByCategory(String category) {
+    public List<Product> findAllProducts() throws ProductException {
+        List<ProductEntity> productEntities = productRepository.findAll();
+        if (productEntities.isEmpty()) {
+            throw new ProductException("No products found");
+        }
+        return productEntities.stream()
+                .map(productEntity -> mapper.convertValue(productEntity, Product.class))
+                .collect(Collectors.toList());
+    }
 
-        return null;
+    @Override
+    public List<Product> findProductByCategory(String category) {
+        List<ProductEntity> productEntities = productRepository.findByCategoryName(category);
+        return productEntities.stream()
+                .map(productEntity -> mapper.convertValue(productEntity, Product.class))
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -131,7 +145,7 @@ public class ProductServiceImpl implements ProductService{
 
         List<ProductEntity> productEntityList= productRepository.filterProducts(category,minPrice,maxPrice,minDiscount,sort);
 
-        if (!colors.isEmpty()) {
+        if (colors != null && !colors.isEmpty()) {
            productEntityList=productEntityList.stream().filter((p -> colors.stream().anyMatch(c -> c.equalsIgnoreCase(p.getColor()))))
                    .collect(Collectors.toList());
         }
