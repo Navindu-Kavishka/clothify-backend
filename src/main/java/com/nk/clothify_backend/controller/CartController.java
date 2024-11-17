@@ -6,6 +6,7 @@ import com.nk.clothify_backend.exception.UserException;
 import com.nk.clothify_backend.model.Cart;
 import com.nk.clothify_backend.model.User;
 import com.nk.clothify_backend.request.AddItemRequest;
+import com.nk.clothify_backend.response.ApiResponse;
 import com.nk.clothify_backend.service.CartService;
 import com.nk.clothify_backend.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -31,16 +32,20 @@ public class CartController {
         return new ResponseEntity<Cart>(cart, HttpStatus.OK);
     }
 
-//    @PostMapping("/add")
-//    public ResponseEntity<ApiResponse> addItemToCart(@RequestBody AddItemRequest req,
-//                                                     @RequestHeader("Authorization") String jwt) throws UserException, ProductException {
-//
-//        User user = userService.findUserProfileByJwt(jwt);
-//
-//        cartService.addCartItem(user.getId(), req);
-//
-//        //ApiResponse res = new ApiResponse();
-//    }
+    @PostMapping("/add")
+    public ResponseEntity<ApiResponse> addItemToCart(@RequestBody AddItemRequest req,
+                                                     @RequestHeader("Authorization") String jwt) throws UserException, ProductException {
+
+        User user = userService.findUserProfileByJwt(jwt);
+
+        cartService.addCartItem(user.getId(), req);
+
+        ApiResponse res = new ApiResponse();
+        res.setMessage("item added to cart");
+        res.setStatus(true);
+
+        return new ResponseEntity<>(res,HttpStatus.OK);
+    }
 
 
 
