@@ -44,7 +44,7 @@ public class RatingController {
 
         List<Rating> ratings = ratingService.getProductsRating(productId);
 
-        return new ResponseEntity<>(ratings,HttpStatus.CREATED);
+        return new ResponseEntity<>(ratings,HttpStatus.ACCEPTED);
     }
 
 }
