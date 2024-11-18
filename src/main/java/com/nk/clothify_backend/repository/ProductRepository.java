@@ -25,5 +25,7 @@ public interface ProductRepository extends JpaRepository<ProductEntity,Long> {
                                               @Param("sort") String sort);
 
 
-    List<ProductEntity> findByCategoryName(String category);
+    @Query("SELECT p FROM ProductEntity p WHERE p.categoryEntity.name = :categoryName")
+    List<ProductEntity> findByCategoryName(@Param("categoryName") String categoryName);
+
 }

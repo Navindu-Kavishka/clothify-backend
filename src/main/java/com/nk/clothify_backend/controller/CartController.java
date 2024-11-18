@@ -29,10 +29,10 @@ public class CartController {
         User user = userService.findUserProfileByJwt(jwt);
         Cart cart = cartService.findUserCart(user.getId());
 
-        return new ResponseEntity<Cart>(cart, HttpStatus.OK);
+        return new ResponseEntity<>(cart, HttpStatus.OK);
     }
 
-    @PostMapping("/add")
+    @PutMapping("/add")
     public ResponseEntity<ApiResponse> addItemToCart(@RequestBody AddItemRequest req,
                                                      @RequestHeader("Authorization") String jwt) throws UserException, ProductException {
 

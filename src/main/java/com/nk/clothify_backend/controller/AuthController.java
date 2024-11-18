@@ -8,6 +8,7 @@ import com.nk.clothify_backend.model.User;
 import com.nk.clothify_backend.repository.UserRepository;
 import com.nk.clothify_backend.request.LoginRequest;
 import com.nk.clothify_backend.response.AuthResponse;
+import com.nk.clothify_backend.service.CartService;
 import com.nk.clothify_backend.service.CustomeUserServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -33,6 +34,7 @@ public class AuthController {
     private final ObjectMapper mapper;
     private final JwtProvider jwtProvider;
     private final PasswordEncoder passwordEncoder;
+    private final CartService cartService;
 
 
 
@@ -51,15 +53,20 @@ public class AuthController {
             throw new UserException("Email is Already Used with Another Account...");
         }
 
+        //create user
         User createdUser = new User();
         createdUser.setEmail(email);
         createdUser.setPassword(passwordEncoder.encode(password));
         createdUser.setFirstName(firstName);
         createdUser.setLastName(lastName);
 
+        //created user save to database
         User savedUser = mapper.convertValue(
                 userRepository.save(mapper.convertValue(createdUser, UserEntity.class))
                 , User.class);
+
+        //when signup cart creating
+        cartService.createCart(savedUser);
 
         Authentication authentication = new UsernamePasswordAuthenticationToken(savedUser.getEmail(),savedUser.getPassword());
         SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -71,7 +78,7 @@ public class AuthController {
         authResponse.setMessage("Signup Success...");
 
 
-        return new ResponseEntity<AuthResponse>(authResponse, HttpStatus.CREATED);
+        return new ResponseEntity<>(authResponse, HttpStatus.CREATED);
 
     }
 
@@ -90,7 +97,7 @@ public class AuthController {
         authResponse.setJwt(token);
         authResponse.setMessage("Signin Success...");
 
-        return new ResponseEntity<AuthResponse>(authResponse, HttpStatus.CREATED);
+        return new ResponseEntity<>(authResponse, HttpStatus.CREATED);
 
     }
 
