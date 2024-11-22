@@ -1,17 +1,20 @@
 package com.nk.clothify_backend.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nk.clothify_backend.entity.*;
 import com.nk.clothify_backend.exception.OrderException;
 import com.nk.clothify_backend.model.*;
-import com.nk.clothify_backend.repository.*;
+import com.nk.clothify_backend.repository.AddressRepository;
+import com.nk.clothify_backend.repository.OrderItemRepository;
+import com.nk.clothify_backend.repository.OrderRepository;
+import com.nk.clothify_backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.aspectj.weaver.ast.Or;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -23,9 +26,7 @@ public class OrderServiceImpl implements OrderService{
     private final AddressRepository addressRepository;
     private final UserRepository userRepository;
     private final UserService userService;
-    private final OrderItemService orderItemService;
     private final OrderItemRepository orderItemRepository;
-    private final ObjectMapper mapper;
     private final ModelMapper modelMapper;
 
 
@@ -34,9 +35,9 @@ public class OrderServiceImpl implements OrderService{
     public Order createOrder(User user, Address shippingAddress) {
 
         shippingAddress.setUserEntity(userService.mapUserToUserEntity(user));
-        AddressEntity saved = addressRepository.save(mapper.convertValue(shippingAddress, AddressEntity.class));
+        AddressEntity saved = addressRepository.save(modelMapper.map(shippingAddress, AddressEntity.class));
         user.getAddressEntities().add(saved);
-        UserEntity userEntity = mapper.convertValue(user, UserEntity.class);
+        UserEntity userEntity = modelMapper.map(user, UserEntity.class);
         userRepository.save(userEntity);
 
         Cart cart = cartService.findUserCart(user.getId());
@@ -52,7 +53,7 @@ public class OrderServiceImpl implements OrderService{
             orderItem.setUserId(entity.getUserId());
             orderItem.setDiscountedPrice(entity.getDiscountedPrice());
 
-            OrderItemEntity savedEntity = orderItemRepository.save(mapper.convertValue(orderItem, OrderItemEntity.class));
+            OrderItemEntity savedEntity = orderItemRepository.save(modelMapper.map(orderItem, OrderItemEntity.class));
             orderItemsEntities.add(savedEntity);
         }
 
@@ -70,14 +71,14 @@ public class OrderServiceImpl implements OrderService{
         createdOrder.getPaymentDetails().setStatus("PENDING");
         createdOrder.setCreatedAt(LocalDateTime.now());
 
-        OrderEntity savedOrder = orderRepository.save(mapper.convertValue(createdOrder, OrderEntity.class));
+        OrderEntity savedOrder = orderRepository.save(modelMapper.map(createdOrder, OrderEntity.class));
 
         for (OrderItemEntity entity:orderItemsEntities) {
             entity.setOrderEntity(savedOrder);
             orderItemRepository.save(entity);
         }
 
-        return mapper.convertValue(savedOrder, Order.class);
+        return modelMapper.map(savedOrder, Order.class);
     }
 
     @Override
@@ -85,7 +86,7 @@ public class OrderServiceImpl implements OrderService{
         Optional<OrderEntity> byId = orderRepository.findById(orderId);
 
         if (byId.isPresent()){
-            return mapper.convertValue(byId.get(), Order.class);
+            return modelMapper.map(byId.get(), Order.class);
         }
         throw new OrderException("order not exist with ID : "+orderId);
     }
@@ -94,7 +95,7 @@ public class OrderServiceImpl implements OrderService{
     public List<Order> usersOrderHistory(Long userId) {
         List<OrderEntity> usersOrders = orderRepository.getUsersOrders(userId);
         List<Order> orders = new ArrayList<>();
-        usersOrders.forEach(orderEntity -> orders.add(mapper.convertValue(orderEntity,Order.class)));
+        usersOrders.forEach(orderEntity -> orders.add(modelMapper.map(orderEntity,Order.class)));
         return orders;
     }
 
@@ -110,9 +111,9 @@ public class OrderServiceImpl implements OrderService{
     public Order confirmedOrder(Long orderId) throws OrderException {
         Order order = findOrderById(orderId);
         order.setOrderStatus("CONFIRMED");
-        return mapper.convertValue(
+        return modelMapper.map(
                 orderRepository.save(
-                        mapper.convertValue(order, OrderEntity.class)
+                        modelMapper.map(order, OrderEntity.class)
                 ), Order.class);
     }
 
@@ -120,9 +121,9 @@ public class OrderServiceImpl implements OrderService{
     public Order shippedOrder(Long orderId) throws OrderException {
         Order order = findOrderById(orderId);
         order.setOrderStatus("SHIPPED");
-        return mapper.convertValue(
+        return modelMapper.map(
                 orderRepository.save(
-                        mapper.convertValue(order,OrderEntity.class)
+                        modelMapper.map(order,OrderEntity.class)
                 ), Order.class);
     }
 
@@ -130,9 +131,9 @@ public class OrderServiceImpl implements OrderService{
     public Order deliveredOrder(Long orderId) throws OrderException {
         Order order = findOrderById(orderId);
         order.setOrderStatus("DELIVERED");
-        return mapper.convertValue(
+        return modelMapper.map(
                 orderRepository.save(
-                        mapper.convertValue(order,OrderEntity.class)
+                        modelMapper.map(order,OrderEntity.class)
                 ), Order.class);
     }
 
@@ -140,9 +141,9 @@ public class OrderServiceImpl implements OrderService{
     public Order canceledOrder(Long orderId) throws OrderException {
         Order order = findOrderById(orderId);
         order.setOrderStatus("CANCELLED");
-        return mapper.convertValue(
+        return modelMapper.map(
                 orderRepository.save(
-                        mapper.convertValue(order,OrderEntity.class)
+                        modelMapper.map(order,OrderEntity.class)
                 ), Order.class);
     }
 
@@ -150,7 +151,7 @@ public class OrderServiceImpl implements OrderService{
     public List<Order> getAllOrders() {
         List<OrderEntity> all = orderRepository.findAll();
         List<Order> orders = new ArrayList<>();
-        all.forEach(orderEntity -> orders.add(mapper.convertValue(orderEntity, Order.class)));
+        all.forEach(orderEntity -> orders.add(modelMapper.map(orderEntity, Order.class)));
         return orders;
     }
 
@@ -161,42 +162,6 @@ public class OrderServiceImpl implements OrderService{
         orderRepository.deleteById(orderId);
     }
 
-    public OrderItemEntity mapToOrderItemEntity(OrderItem orderItem) {
-        OrderItemEntity entity = new OrderItemEntity();
-        entity.setId(orderItem.getId());
-        entity.setPrice(orderItem.getPrice());
-        entity.setOrderEntity(orderItem.getOrderEntity());
-        entity.setProductEntity(orderItem.getProductEntity());
-        entity.setQuantity(orderItem.getQuantity());
-        entity.setSize(orderItem.getSize());
-        entity.setUserId(orderItem.getUserId());
-        entity.setDiscountedPrice(orderItem.getDiscountedPrice());
-        entity.setDeliveryDate(orderItem.getDeliveryDate());
-        return entity;
-    }
-
-    public OrderEntity mapToOrderEntity(Order order) {
-        OrderEntity entity = new OrderEntity();
-        entity.setId(order.getId());
-        entity.setOrderId(order.getOrderId());
-        entity.setUserEntity(order.getUserEntity());
-        entity.setOrderDate(order.getOrderDate());
-        entity.setDeliveryDate(order.getDeliveryDate());
-        entity.setShippingAddressEntity(order.getShippingAddressEntity());
-        entity.setPaymentDetails(order.getPaymentDetails());
-        entity.setTotalPrice(order.getTotalPrice());
-        entity.setTotalDiscountedPrice(order.getTotalDiscountedPrice());
-        entity.setDiscount(order.getDiscount());
-        entity.setOrderStatus(order.getOrderStatus());
-        entity.setTotalItem(order.getTotalItem());
-        entity.setCreatedAt(order.getCreatedAt());
-
-        List<OrderItemEntity> orderItemEntities = order.getOrderItemEntities();
-        List<OrderItemEntity> orderItems = orderItemEntities != null ? new ArrayList<>(orderItemEntities) : new ArrayList<>();
-        entity.setOrderItemEntities(orderItems);
-
-        return entity;
-    }
 
 
 
