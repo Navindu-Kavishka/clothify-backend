@@ -7,6 +7,7 @@ import com.nk.clothify_backend.model.*;
 import com.nk.clothify_backend.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.weaver.ast.Or;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -21,15 +22,18 @@ public class OrderServiceImpl implements OrderService{
     private final CartService cartService;
     private final AddressRepository addressRepository;
     private final UserRepository userRepository;
+    private final UserService userService;
     private final OrderItemService orderItemService;
     private final OrderItemRepository orderItemRepository;
     private final ObjectMapper mapper;
+    private final ModelMapper modelMapper;
+
 
 
     @Override
     public Order createOrder(User user, Address shippingAddress) {
 
-        shippingAddress.setUserEntity(mapper.convertValue(user, UserEntity.class));
+        shippingAddress.setUserEntity(userService.mapUserToUserEntity(user));
         AddressEntity saved = addressRepository.save(mapper.convertValue(shippingAddress, AddressEntity.class));
         user.getAddressEntities().add(saved);
         UserEntity userEntity = mapper.convertValue(user, UserEntity.class);
@@ -193,34 +197,7 @@ public class OrderServiceImpl implements OrderService{
 
         return entity;
     }
-//
-//    public Order mapToOrderDTO(OrderEntity orderEntity) {
-//        Order orderDTO = new Order();
-//        orderDTO.setId(orderEntity.getId());
-//        orderDTO.setOrderId(orderEntity.getOrderId());
-//        orderDTO.setTotalPrice(orderEntity.getTotalPrice());
-//        orderDTO.setTotalDiscountedPrice(orderEntity.getTotalDiscountedPrice());
-//        orderDTO.setDiscount(orderEntity.getDiscount());
-//        orderDTO.setOrderStatus(orderEntity.getOrderStatus());
-//
-//        List<OrderItem> orderItemDTOs = orderEntity.getOrderItemEntities().stream()
-//                .map(orderItem -> {
-//                    OrderItem orderItemDTO = new OrderItem();
-//                    orderItemDTO.setId(orderItem.getId());
-//                    orderItemDTO.setSize(orderItem.getSize());
-//                    orderItemDTO.setQuantity(orderItem.getQuantity());
-//                    orderItemDTO.setPrice(orderItem.getPrice());
-//                    orderItemDTO.setDiscountedPrice(orderItem.getDiscountedPrice());
-//                    orderItemDTO.setProductName(orderItem.getProductEntity().getName());  // Example of only serializing necessary fields
-//
-//                    return orderItemDTO;
-//                })
-//                .collect(Collectors.toList());
-//
-//        orderDTO.setOrderItems(orderItemDTOs);
-//
-//        return orderDTO;
-//    }
+
 
 
 }

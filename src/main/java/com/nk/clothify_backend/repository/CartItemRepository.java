@@ -9,7 +9,8 @@ import org.springframework.data.repository.query.Param;
 
 public interface CartItemRepository extends JpaRepository<CartItemEntity,Long> {
 
-    //not update
+
+    //checked
     @Query("SELECT ci FROM CartItemEntity ci WHERE ci.cartEntity=:cartEntity AND ci.productEntity=:productEntity AND ci.size=:size AND ci.userId=:userId")
     public CartItemEntity isCartItemExist(
             @Param("cartEntity")CartEntity cartEntity,

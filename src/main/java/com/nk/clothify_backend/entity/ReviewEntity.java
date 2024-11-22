@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+//checked
+
 @Entity
 @Table(name = "review")
 @Data

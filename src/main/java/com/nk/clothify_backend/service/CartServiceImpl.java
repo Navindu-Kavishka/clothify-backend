@@ -15,6 +15,7 @@ import com.nk.clothify_backend.repository.CartRepository;
 import com.nk.clothify_backend.request.AddItemRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -31,15 +32,16 @@ public class CartServiceImpl implements CartService{
     private final CartItemService cartItemService;
     private final ProductService productService;
     private final ObjectMapper mapper;
+    private final ModelMapper modelMapper;
 
     @Override
     public Cart createCart(User user) {
 
         Cart cart = new Cart();
-        cart.setUserEntity(mapper.convertValue(user, UserEntity.class));
-        return mapper.convertValue(
+        cart.setUserEntity(modelMapper.map(user, UserEntity.class));
+        return modelMapper.map(
                 cartRepository.save(
-                        mapper.convertValue(cart, CartEntity.class)
+                        modelMapper.map(cart, CartEntity.class)
                 ), Cart.class
         );
     }
@@ -50,10 +52,10 @@ public class CartServiceImpl implements CartService{
         Product product = productService.findProductById(req.getProductId());
 
 
-        CartItem isCartItemExist = cartItemService.isCartItemExist(mapper.convertValue(cartEntity, Cart.class), product, req.getSize(), userId);
+        CartItem isCartItemExist = cartItemService.isCartItemExist(modelMapper.map(cartEntity, Cart.class), product, req.getSize(), userId);
         if (isCartItemExist==null){
             CartItem cartItem = new CartItem();
-            cartItem.setProductEntity(mapper.convertValue(product, ProductEntity.class));
+            cartItem.setProductEntity(modelMapper.map(product, ProductEntity.class));
             cartItem.setCartEntity(cartEntity);
             cartItem.setQuantity(req.getQuantity());
             cartItem.setUserId(userId);
@@ -65,10 +67,6 @@ public class CartServiceImpl implements CartService{
             CartItem createdItem = cartItemService.createCartItem(mapper.convertValue(cartItem, CartItem.class));
 
             cartEntity.getCartItemEntities().add(mapper.convertValue(createdItem, CartItemEntity.class));
-            //cartEntity.addCartItem(mapper.convertValue(createdItem, CartItemEntity.class));
-
-
-
         }
         return "Item added to cart...";
     }
@@ -106,23 +104,6 @@ public class CartServiceImpl implements CartService{
 
         log.info("saved : "+saved);
 
-        for (CartItemEntity item : cartEntity.getCartItemEntities()) {
-            log.info("CartItemEntity: " + item);
-            log.info("ProductEntity: " + item.getProductEntity());
-            log.info("Size: " + item.getSize());
-            log.info("Quantity: " + item.getQuantity());
-            log.info("Price: " + item.getPrice());
-            log.info("DiscountedPrice: " + item.getDiscountedPrice());
-        }
-
-        for (CartItemEntity item : saved.getCartItemEntities()) {
-            log.info("CartItemEntity: " + item);
-            log.info("ProductEntity: " + item.getProductEntity());
-            log.info("Size: " + item.getSize());
-            log.info("Quantity: " + item.getQuantity());
-            log.info("Price: " + item.getPrice());
-            log.info("DiscountedPrice: " + item.getDiscountedPrice());
-        }
 
         // Convert to Cart DTO
         Cart cart = mapToCart(saved); // Use the explicit mapping method

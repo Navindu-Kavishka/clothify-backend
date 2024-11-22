@@ -7,6 +7,8 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
+//checked
+
 
 @Entity
 @Table(name = "order_Item")
@@ -22,14 +24,11 @@ public class OrderItemEntity {
 
 
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_id")
-    @JsonBackReference
+    @ManyToOne
+    @JsonIgnore
     private OrderEntity orderEntity;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id")
-    @JsonIgnore
     private ProductEntity productEntity;
 
 

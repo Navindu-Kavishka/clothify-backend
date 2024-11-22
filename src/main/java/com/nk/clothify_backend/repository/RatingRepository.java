@@ -7,6 +7,8 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
+//checked
+
 public interface RatingRepository extends JpaRepository<RatingEntity,Long> {
 
 

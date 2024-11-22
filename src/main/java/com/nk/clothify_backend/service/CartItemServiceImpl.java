@@ -13,6 +13,7 @@ import com.nk.clothify_backend.model.User;
 import com.nk.clothify_backend.repository.CartItemRepository;
 import com.nk.clothify_backend.repository.CartRepository;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -25,6 +26,7 @@ public class CartItemServiceImpl implements CartItemService{
     private final UserService userService;
     private final CartRepository cartRepository;
     private final ObjectMapper mapper;
+    private final ModelMapper modelMapper;
 
 
 
@@ -34,13 +36,9 @@ public class CartItemServiceImpl implements CartItemService{
         cartItem.setPrice(cartItem.getProductEntity().getPrice()*cartItem.getQuantity());
         cartItem.setDiscountedPrice(cartItem.getProductEntity().getDiscountedPrice()*cartItem.getQuantity());
 
-        CartItemEntity cartItemEntity = mapper.convertValue(cartItem, CartItemEntity.class);
+        CartItemEntity savedEntity = cartItemRepository.save(modelMapper.map(cartItem, CartItemEntity.class));
 
-        CartItemEntity createdCartItemEntity=cartItemRepository.save(cartItemEntity);
-        CartItem converted = mapper.convertValue(createdCartItemEntity, CartItem.class);
-
-
-        return converted;
+        return modelMapper.map(savedEntity,CartItem.class);
     }
 
     @Override
@@ -53,19 +51,24 @@ public class CartItemServiceImpl implements CartItemService{
             item.setPrice(item.getQuantity()*item.getProductEntity().getPrice());
             item.setDiscountedPrice(item.getProductEntity().getDiscountedPrice()*item.getQuantity());
         }
-        return mapper.convertValue(
+        return modelMapper.map(
                 cartItemRepository.save(
-                        mapper.convertValue(item, CartItemEntity.class)
+                        modelMapper.map(item, CartItemEntity.class)
                 ), CartItem.class);
     }
 
     @Override
     public CartItem isCartItemExist(Cart cart, Product product, String size, Long userId) {
-        CartEntity cartEntity = mapper.convertValue(cart, CartEntity.class);
-        ProductEntity productEntity = mapper.convertValue(product, ProductEntity.class);
+        CartEntity cartEntity = modelMapper.map(cart, CartEntity.class);
+        ProductEntity productEntity = modelMapper.map(product, ProductEntity.class);
 
         CartItemEntity cartItemEntityExist = cartItemRepository.isCartItemExist(cartEntity, productEntity, size, userId);
-        return mapper.convertValue(cartItemEntityExist, CartItem.class);
+
+        if (cartItemEntityExist == null) {
+            return null;
+        }
+
+        return modelMapper.map(cartItemEntityExist, CartItem.class);
     }
 
     @Override

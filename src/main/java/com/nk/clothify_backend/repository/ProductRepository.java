@@ -7,11 +7,13 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
+//checked
+
 public interface ProductRepository extends JpaRepository<ProductEntity,Long> {
 
     @Query(
             "SELECT p FROM ProductEntity p " +
-                    "WHERE (p.categoryEntity.name = :category OR :category = '') " + // Reference the correct field for category
+                    "WHERE (p.categoryEntity.name =:category OR :category = '') " + // Reference the correct field for category
                     "AND ((:minPrice IS NULL AND :maxPrice IS NULL) OR (p.discountedPrice BETWEEN :minPrice AND :maxPrice)) " +
                     "AND (:minDiscount IS NULL OR p.discountPercentage >= :minDiscount) " +
                     "ORDER BY " +

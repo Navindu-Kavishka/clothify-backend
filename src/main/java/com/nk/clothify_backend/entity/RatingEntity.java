@@ -6,6 +6,8 @@ import lombok.Data;
 
 import java.time.LocalDateTime;
 
+//checked
+
 @Entity
 @Table(name = "rating")
 @Data
@@ -18,6 +20,8 @@ public class RatingEntity {
     @ManyToOne
     @JoinColumn(name = "user_id",nullable = false)
     private UserEntity userEntity;
+
+
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "product_id",nullable = false)

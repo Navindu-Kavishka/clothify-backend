@@ -12,6 +12,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+
+
 @Entity
 @Table(name = "product")
 @Data
@@ -38,10 +40,12 @@ public class ProductEntity {
     private int quantity;
 
     private String brand;
+
     private String color;
 
     @Embedded
     @ElementCollection
+    @Column(name = "sizes")
     private Set<Size> sizes = new HashSet<>();
 
     @Column(name = "image_url")

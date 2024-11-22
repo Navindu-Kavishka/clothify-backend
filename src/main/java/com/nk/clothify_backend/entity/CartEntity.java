@@ -4,9 +4,10 @@ package com.nk.clothify_backend.entity;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.util.HashSet;
 import java.util.Set;
+
+//checked
 
 @Entity
 @Table(name = "cart")
@@ -26,15 +27,17 @@ public class CartEntity {
     private UserEntity userEntity;
 
 
-    @OneToMany(mappedBy = "cartEntity", cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.LAZY)
-    @JsonManagedReference // Prevents infinite recursion
+    @OneToMany(mappedBy = "cartEntity", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Column(name = "cart_items")
     private Set<CartItemEntity> cartItemEntities = new HashSet<>();
 
-
+    @Column(name = "total_price")
     private Integer totalPrice;
 
+    @Column(name = "total_item")
     private Integer totalItem;
 
+    @Column(name = "total_discounted_price")
     private Integer totalDiscountedPrice;
 
     private Integer discount;

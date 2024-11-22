@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+//checked
 
 @Entity
 @Table(name = "address")
@@ -38,8 +39,10 @@ public class AddressEntity {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
+    @JsonIgnore
     private UserEntity userEntity;
 
+    @Column(name = "phone_number")
     private String phoneNumber;
 
 

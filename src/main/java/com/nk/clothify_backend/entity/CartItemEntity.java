@@ -7,6 +7,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+//checked
+
 @Entity
 @Table(name = "cart_item")
 @Getter
@@ -18,13 +20,11 @@ public class CartItemEntity {
     private Long id;
 
 
+    @JsonIgnore
     @ManyToOne
-    @JoinColumn(name = "cart_id",nullable = false)
-    @JsonBackReference   // Prevents infinite recursion
     private CartEntity cartEntity;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id")
+    @ManyToOne
     private ProductEntity  productEntity;
 
     private String size;
@@ -33,8 +33,10 @@ public class CartItemEntity {
 
     private Integer price;
 
+    @Column(name = "discounted_price")
     private Integer discountedPrice;
 
     private Long userId;
+
 
 }

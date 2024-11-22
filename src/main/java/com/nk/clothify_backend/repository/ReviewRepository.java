@@ -7,6 +7,8 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
+//checked
+
 public interface ReviewRepository extends JpaRepository<ReviewEntity,Long> {
 
     @Query("SELECT r FROM ReviewEntity r WHERE r.productEntity.id=:productId")
