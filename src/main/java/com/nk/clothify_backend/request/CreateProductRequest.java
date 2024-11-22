@@ -1,22 +1,21 @@
 package com.nk.clothify_backend.request;
 
 import com.nk.clothify_backend.model.Size;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.HashSet;
 import java.util.Set;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class CreateProductRequest {
 
     private String title;
     private String description;
-    private Double price;
-    private Double discountedPrice;
+    private int price;
+    private int discountedPrice;
     private int discountPercentage;
     private int quantity;
     private String brand;

@@ -4,9 +4,7 @@ import com.nk.clothify_backend.entity.AddressEntity;
 import com.nk.clothify_backend.entity.OrderItemEntity;
 import com.nk.clothify_backend.entity.UserEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -14,7 +12,8 @@ import java.util.List;
 
 
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class Order {
@@ -39,9 +38,9 @@ public class Order {
     private PaymentDetails paymentDetails = new PaymentDetails();
 
 
-    private Double totalPrice;
+    private double totalPrice;
 
-    private Double totalDiscountedPrice;
+    private Integer totalDiscountedPrice;
 
     private Integer discount;
 

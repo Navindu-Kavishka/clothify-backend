@@ -5,9 +5,7 @@ import com.nk.clothify_backend.model.Product;
 import com.nk.clothify_backend.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.logging.log4j.Logger;
 import org.springframework.data.domain.Page;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -38,9 +36,6 @@ public class ProductController {
             @RequestParam Integer pageSize
             )
     {
-
-        log.info("Fetching products with parameters: category={}, color={}, size={}, minPrice={}, maxPrice={}, minDiscount={}, sort={}, stock={}, pageNumber={}, pageSize={}",
-                category, color, size, minPrice, maxPrice, minDiscount, sort, stock, pageNumber, pageSize);
 
         Page<Product> res = productService.getAllProduct(category,color,size,minPrice,maxPrice,minDiscount,sort,stock,pageNumber,pageSize);
 

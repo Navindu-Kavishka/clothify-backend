@@ -3,9 +3,7 @@ package com.nk.clothify_backend.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.nk.clothify_backend.model.PaymentInfomation;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -13,9 +11,11 @@ import java.util.List;
 
 @Entity
 @Table(name = "user")
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
+
 public class UserEntity {
 
     @Id

@@ -4,9 +4,7 @@ import com.nk.clothify_backend.entity.CategoryEntity;
 import com.nk.clothify_backend.entity.RatingEntity;
 import com.nk.clothify_backend.entity.ReviewEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -15,7 +13,8 @@ import java.util.List;
 import java.util.Set;
 
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class Product {
@@ -27,11 +26,11 @@ public class Product {
 
     private String description;
 
-    private double price;
+    private int price;
 
-    private double discountedPrice;
+    private int discountedPrice;
 
-    private double discountPercentage;
+    private int discountPercentage;
 
     private int quantity;
 

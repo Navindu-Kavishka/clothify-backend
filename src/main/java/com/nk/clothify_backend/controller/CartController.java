@@ -10,6 +10,7 @@ import com.nk.clothify_backend.response.ApiResponse;
 import com.nk.clothify_backend.service.CartService;
 import com.nk.clothify_backend.service.UserService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/cart")
 @RequiredArgsConstructor
-//@Tag()
+@Slf4j
 public class CartController {
 
     private final CartService cartService;
@@ -29,6 +30,7 @@ public class CartController {
         User user = userService.findUserProfileByJwt(jwt);
         Cart cart = cartService.findUserCart(user.getId());
 
+        log.info("Cart items in cart: " + cart.getCartItemEntities());
         return new ResponseEntity<>(cart, HttpStatus.OK);
     }
 

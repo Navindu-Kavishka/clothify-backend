@@ -27,12 +27,13 @@ public class ProductEntity {
 
     private String description;
 
-    private Double price;
+    private Integer price;
 
     @Column(name = "discounted_price")
-    private Double discountedPrice;
+    private Integer discountedPrice;
+
     @Column(name = "discount_percentage")
-    private Double discountPercentage;
+    private Integer discountPercentage;
 
     private int quantity;
 

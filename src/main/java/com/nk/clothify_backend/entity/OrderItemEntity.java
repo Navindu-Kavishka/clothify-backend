@@ -1,17 +1,17 @@
 package com.nk.clothify_backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 
 @Entity
-@Table(name = "orderItem")
-@Data
+@Table(name = "order_Item")
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class OrderItemEntity {
@@ -21,11 +21,15 @@ public class OrderItemEntity {
     private Long id;
 
 
-    @JsonIgnore
-    @ManyToOne
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id")
+    @JsonBackReference
     private OrderEntity orderEntity;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_id")
+    @JsonIgnore
     private ProductEntity productEntity;
 
 
@@ -33,9 +37,9 @@ public class OrderItemEntity {
 
     private int quantity;
 
-    private Double price;
+    private Integer price;
 
-    private Double discountedPrice;
+    private Integer discountedPrice;
 
     private Long userId;
 

@@ -3,15 +3,14 @@ package com.nk.clothify_backend.model;
 
 import com.nk.clothify_backend.entity.CartItemEntity;
 import com.nk.clothify_backend.entity.UserEntity;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.HashSet;
 import java.util.Set;
 
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class Cart {
@@ -23,13 +22,13 @@ public class Cart {
 
     private Set<CartItemEntity> cartItemEntities = new HashSet<>();
 
-    private Double totalPrice;
+    private int totalPrice;
 
-    private Integer totalItem;
+    private int totalItem;
 
-    private Double totalDiscountedPrice;
+    private int totalDiscountedPrice;
 
-    private Double discount;
+    private int discount;
 
 
 

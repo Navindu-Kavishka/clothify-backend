@@ -31,16 +31,15 @@ public class User {
 
     private List<AddressEntity> addressEntities = new ArrayList<>();
 
-    @Embedded
-    @ElementCollection
+
     private List<PaymentInfomation> paymentInfomation = new ArrayList<>();
 
 
-    @JsonIgnore
+
     private List<RatingEntity> ratingEntities = new ArrayList<>();
 
 
-    @JsonIgnore
+
     private List<ReviewEntity> reviewEntities = new ArrayList<>();
 
     private LocalDateTime createdAt;

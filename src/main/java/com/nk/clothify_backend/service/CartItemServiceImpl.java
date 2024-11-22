@@ -31,11 +31,16 @@ public class CartItemServiceImpl implements CartItemService{
     @Override
     public CartItem createCartItem(CartItem cartItem) {
         cartItem.setQuantity(1);
-        cartItem.setPrice(cartItem.getProduct().getPrice()*cartItem.getQuantity());
-        cartItem.setDiscountedPrice(cartItem.getProduct().getDiscountedPrice()*cartItem.getQuantity());
+        cartItem.setPrice(cartItem.getProductEntity().getPrice()*cartItem.getQuantity());
+        cartItem.setDiscountedPrice(cartItem.getProductEntity().getDiscountedPrice()*cartItem.getQuantity());
 
-        CartItemEntity createdCartItemEntity=cartItemRepository.save(mapper.convertValue(cartItem, CartItemEntity.class));
-        return mapper.convertValue(createdCartItemEntity, CartItem.class);
+        CartItemEntity cartItemEntity = mapper.convertValue(cartItem, CartItemEntity.class);
+
+        CartItemEntity createdCartItemEntity=cartItemRepository.save(cartItemEntity);
+        CartItem converted = mapper.convertValue(createdCartItemEntity, CartItem.class);
+
+
+        return converted;
     }
 
     @Override
@@ -45,8 +50,8 @@ public class CartItemServiceImpl implements CartItemService{
 
         if (user.getId().equals(userId)) {
             item.setQuantity(cartItem.getQuantity());
-            item.setPrice(item.getQuantity()*item.getProduct().getPrice());
-            item.setDiscountedPrice(item.getProduct().getDiscountedPrice()*item.getQuantity());
+            item.setPrice(item.getQuantity()*item.getProductEntity().getPrice());
+            item.setDiscountedPrice(item.getProductEntity().getDiscountedPrice()*item.getQuantity());
         }
         return mapper.convertValue(
                 cartItemRepository.save(
@@ -58,7 +63,9 @@ public class CartItemServiceImpl implements CartItemService{
     public CartItem isCartItemExist(Cart cart, Product product, String size, Long userId) {
         CartEntity cartEntity = mapper.convertValue(cart, CartEntity.class);
         ProductEntity productEntity = mapper.convertValue(product, ProductEntity.class);
-        return mapper.convertValue(cartItemRepository.isCartItemExist(cartEntity,productEntity,size,userId), CartItem.class);
+
+        CartItemEntity cartItemEntityExist = cartItemRepository.isCartItemExist(cartEntity, productEntity, size, userId);
+        return mapper.convertValue(cartItemEntityExist, CartItem.class);
     }
 
     @Override

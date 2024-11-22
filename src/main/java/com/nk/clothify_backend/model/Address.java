@@ -3,13 +3,11 @@ package com.nk.clothify_backend.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.nk.clothify_backend.entity.UserEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 
-
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class Address {

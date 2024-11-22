@@ -38,7 +38,6 @@ public class AddressEntity {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    @JsonIgnore
     private UserEntity userEntity;
 
     private String phoneNumber;

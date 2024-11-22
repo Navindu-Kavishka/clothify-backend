@@ -24,7 +24,7 @@ public class RatingEntity {
     private ProductEntity productEntity;
 
     @Column(name = "rating")
-    private double rating;
+    private int rating;
 
     private LocalDateTime createdAt;
 

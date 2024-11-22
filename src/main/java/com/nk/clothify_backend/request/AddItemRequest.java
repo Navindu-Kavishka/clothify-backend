@@ -2,8 +2,11 @@ package com.nk.clothify_backend.request;
 
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 public class AddItemRequest {
 
     private Long productId;
@@ -12,6 +15,6 @@ public class AddItemRequest {
 
     private int quantity;
 
-    private Double price;
+    private Integer price;
 
 }

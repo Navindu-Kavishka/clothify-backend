@@ -20,10 +20,10 @@ public class AdminOrderController {
 
     @GetMapping("/")
     public ResponseEntity<List<Order>> getAllOrdersHandler(@PathVariable Long orderId,
-                                                           @RequestHeader("Authorization") String jwt) throws OrderException {
+                                                           @RequestHeader("Authorization") String jwt) {
 
         List<Order> allOrders = orderService.getAllOrders();
-        return new ResponseEntity<List<Order>>(allOrders, HttpStatus.ACCEPTED);
+        return new ResponseEntity<>(allOrders, HttpStatus.ACCEPTED);
     }
 
     @PutMapping("/{orderId}/confirmed")
@@ -34,7 +34,7 @@ public class AdminOrderController {
         return new ResponseEntity<>(order,HttpStatus.OK);
     }
 
-    @PutMapping("/{orderId}/shipped")
+    @PutMapping("/{orderId}/ship")
     public ResponseEntity<Order> shippedOrderHandler(@PathVariable Long orderId,
                                                        @RequestHeader("Authorization") String jwt) throws OrderException {
 
@@ -42,7 +42,7 @@ public class AdminOrderController {
         return new ResponseEntity<>(order,HttpStatus.OK);
     }
 
-    @PutMapping("/{orderId}/delivered")
+    @PutMapping("/{orderId}/deliver")
     public ResponseEntity<Order> deliveredOrderHandler(@PathVariable Long orderId,
                                                        @RequestHeader("Authorization") String jwt) throws OrderException {
 
@@ -50,7 +50,7 @@ public class AdminOrderController {
         return new ResponseEntity<>(order,HttpStatus.OK);
     }
 
-    @PutMapping("/{orderId}/canceled")
+    @PutMapping("/{orderId}/cancel")
     public ResponseEntity<Order> canceledOrderHandler(@PathVariable Long orderId,
                                                        @RequestHeader("Authorization") String jwt) throws OrderException {
 

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nk.clothify_backend.config.JwtProvider;
 import com.nk.clothify_backend.entity.UserEntity;
 import com.nk.clothify_backend.exception.UserException;
+import com.nk.clothify_backend.model.Cart;
 import com.nk.clothify_backend.model.User;
 import com.nk.clothify_backend.repository.UserRepository;
 import com.nk.clothify_backend.request.LoginRequest;
@@ -66,7 +67,7 @@ public class AuthController {
                 , User.class);
 
         //when signup cart creating
-        cartService.createCart(savedUser);
+        Cart cart = cartService.createCart(savedUser);
 
         Authentication authentication = new UsernamePasswordAuthenticationToken(savedUser.getEmail(),savedUser.getPassword());
         SecurityContextHolder.getContext().setAuthentication(authentication);
