@@ -1,5 +1,6 @@
 package com.nk.clothify_backend.controller;
 
+import com.nk.clothify_backend.entity.OrderItemEntity;
 import com.nk.clothify_backend.exception.OrderException;
 import com.nk.clothify_backend.exception.UserException;
 import com.nk.clothify_backend.model.Address;
@@ -9,6 +10,7 @@ import com.nk.clothify_backend.service.OrderService;
 import com.nk.clothify_backend.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.Hibernate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -55,7 +57,9 @@ public class OrderController {
         userService.findUserProfileByJwt(jwt);
         Order order = orderService.findOrderById(orderId);
 
-        return new ResponseEntity<>(order,HttpStatus.CREATED);
+
+        log.info("order :"+order.toString());
+        return new ResponseEntity<>(order,HttpStatus.OK);
     }
 
 }

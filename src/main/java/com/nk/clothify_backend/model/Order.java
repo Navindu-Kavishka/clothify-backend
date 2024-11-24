@@ -1,5 +1,6 @@
 package com.nk.clothify_backend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.nk.clothify_backend.entity.AddressEntity;
 import com.nk.clothify_backend.entity.OrderItemEntity;
 import com.nk.clothify_backend.entity.UserEntity;
@@ -16,6 +17,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Order {
 
 
@@ -27,16 +29,13 @@ public class Order {
 
     private List<OrderItemEntity> orderItemEntities = new ArrayList<>();
 
+    private AddressEntity shippingAddressEntity;
+
     private LocalDateTime orderDate;
 
     private LocalDateTime deliveryDate;
 
-
-    private AddressEntity shippingAddressEntity;
-
-    @Embedded
     private PaymentDetails paymentDetails = new PaymentDetails();
-
 
     private double totalPrice;
 

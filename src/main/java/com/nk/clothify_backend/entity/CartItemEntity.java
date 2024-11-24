@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 //checked
 
@@ -13,6 +14,7 @@ import lombok.Setter;
 @Table(name = "cart_item")
 @Getter
 @Setter
+@ToString
 public class CartItemEntity {
 
     @Id

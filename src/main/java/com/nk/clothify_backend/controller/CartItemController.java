@@ -8,6 +8,7 @@ import com.nk.clothify_backend.response.ApiResponse;
 import com.nk.clothify_backend.service.CartItemService;
 import com.nk.clothify_backend.service.UserService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/cart_items")
+@Slf4j
 @RequiredArgsConstructor
 public class CartItemController {
 
@@ -40,9 +42,12 @@ public class CartItemController {
             @RequestHeader("Authorization") String jwt
     ) throws UserException, CartItemException {
 
+        log.info("start cart item update from cart item controller");
+
         User user = userService.findUserProfileByJwt(jwt);
         CartItem updateCartItem = cartItemService.updateCartItem(user.getId(), cartItemId, cartItem);
 
+        log.info("finished cart item update from cart item controller");
         return new ResponseEntity<>(updateCartItem,HttpStatus.OK);
     }
 

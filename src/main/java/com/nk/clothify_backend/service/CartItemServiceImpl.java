@@ -13,19 +13,20 @@ import com.nk.clothify_backend.model.User;
 import com.nk.clothify_backend.repository.CartItemRepository;
 import com.nk.clothify_backend.repository.CartRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class CartItemServiceImpl implements CartItemService{
 
     private final CartItemRepository cartItemRepository;
     private final UserService userService;
     private final CartRepository cartRepository;
-    private final ObjectMapper mapper;
     private final ModelMapper modelMapper;
 
 
@@ -43,6 +44,7 @@ public class CartItemServiceImpl implements CartItemService{
 
     @Override
     public CartItem updateCartItem(Long userId, Long id, CartItem cartItem) throws CartItemException, UserException {
+        log.info("start updateCartItem from cart item ser impl");
         CartItem item = findCartItemById(id);
         User user = userService.findUserById(item.getUserId());
 
@@ -51,6 +53,8 @@ public class CartItemServiceImpl implements CartItemService{
             item.setPrice(item.getQuantity()*item.getProductEntity().getPrice());
             item.setDiscountedPrice(item.getProductEntity().getDiscountedPrice()*item.getQuantity());
         }
+        log.info("finished updateCartItem from cart item ser impl");
+        log.info("item : "+item);
         return modelMapper.map(
                 cartItemRepository.save(
                         modelMapper.map(item, CartItemEntity.class)
@@ -91,7 +95,8 @@ public class CartItemServiceImpl implements CartItemService{
         Optional<CartItemEntity> opt = cartItemRepository.findById(cartItemId);
 
         if (opt.isPresent()) {
-            return mapper.convertValue(opt.get(), CartItem.class);
+            log.info("finded item : "+opt.get());
+            return modelMapper.map(opt.get(), CartItem.class);
         }
         throw new CartItemException("cart item not found with ID: "+cartItemId);
     }

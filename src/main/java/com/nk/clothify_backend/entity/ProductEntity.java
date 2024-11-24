@@ -1,5 +1,6 @@
 package com.nk.clothify_backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.nk.clothify_backend.model.Size;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -19,6 +20,7 @@ import java.util.Set;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class ProductEntity {
 
     @Id

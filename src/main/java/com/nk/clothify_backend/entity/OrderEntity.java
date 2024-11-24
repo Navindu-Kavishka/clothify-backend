@@ -58,15 +58,5 @@ public class OrderEntity {
 
     private LocalDateTime createdAt;
 
-    // Helper methods
-    public void addOrderItem(OrderItemEntity orderItem) {
-        orderItem.setOrderEntity(this);
-        this.orderItemEntities.add(orderItem);
-    }
-
-    public void removeOrderItem(OrderItemEntity orderItem) {
-        orderItem.setOrderEntity(null);
-        this.orderItemEntities.remove(orderItem);
-    }
 
 }

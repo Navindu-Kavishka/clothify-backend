@@ -9,6 +9,7 @@ import com.nk.clothify_backend.repository.CategoryRepository;
 import com.nk.clothify_backend.repository.ProductRepository;
 import com.nk.clothify_backend.request.CreateProductRequest;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -28,7 +29,7 @@ public class ProductServiceImpl implements ProductService{
     private final ProductRepository productRepository;
     private final UserService userService;
     private final CategoryRepository categoryRepository;
-    private final ObjectMapper mapper;
+    private final ModelMapper modelMapper;
 
     @Override
     public Product createProduct(CreateProductRequest req) {
@@ -79,16 +80,16 @@ public class ProductServiceImpl implements ProductService{
         product.setCategoryEntity(thirdLevel);
         product.setCreatedAt(LocalDateTime.now());
 
-        ProductEntity savedProductEntity = productRepository.save(mapper.convertValue(product, ProductEntity.class));
+        ProductEntity savedProductEntity = productRepository.save(modelMapper.map(product, ProductEntity.class));
 
-        return mapper.convertValue(savedProductEntity, Product.class);
+        return modelMapper.map(savedProductEntity, Product.class);
     }
 
     @Override
     public String deleteProduct(Long productId) throws ProductException {
 
         Product product = findProductById(productId);
-        ProductEntity productEntity = mapper.convertValue(product, ProductEntity.class);
+        ProductEntity productEntity = modelMapper.map(product, ProductEntity.class);
         
         productRepository.delete(productEntity);
         return "Product deleted Successfully..."; 
@@ -100,9 +101,9 @@ public class ProductServiceImpl implements ProductService{
         Product productById = findProductById(productId);
         productById.setQuantity(req.getQuantity());
 
-        return mapper.convertValue(
+        return modelMapper.map(
                 productRepository.save(
-                        mapper.convertValue(
+                        modelMapper.map(
                                 productById, ProductEntity.class)
                 ), Product.class);
     }
@@ -112,7 +113,7 @@ public class ProductServiceImpl implements ProductService{
         Optional<ProductEntity> productById = productRepository.findById(productId);
 
         if (productById.isPresent()){
-            return mapper.convertValue(productById.get(), Product.class);
+            return modelMapper.map(productById.get(), Product.class);
         }
         throw new ProductException("Product not found with ID: " + productId);
 
@@ -125,7 +126,7 @@ public class ProductServiceImpl implements ProductService{
             throw new ProductException("No products found");
         }
         return productEntities.stream()
-                .map(productEntity -> mapper.convertValue(productEntity, Product.class))
+                .map(productEntity -> modelMapper.map(productEntity, Product.class))
                 .collect(Collectors.toList());
     }
 
@@ -133,7 +134,7 @@ public class ProductServiceImpl implements ProductService{
     public List<Product> findProductByCategory(String category) {
         List<ProductEntity> productEntities = productRepository.findByCategoryName(category);
         return productEntities.stream()
-                .map(productEntity -> mapper.convertValue(productEntity, Product.class))
+                .map(productEntity -> modelMapper.map(productEntity, Product.class))
                 .collect(Collectors.toList());
     }
 
@@ -161,7 +162,7 @@ public class ProductServiceImpl implements ProductService{
         int endIndex = Math.min(startIndex + pageable.getPageSize(), productEntityList.size());
 
         List<Product> products = new ArrayList<>();
-        productEntityList.forEach(productEntity -> products.add(mapper.convertValue(productEntity, Product.class)));
+        productEntityList.forEach(productEntity -> products.add(modelMapper.map(productEntity, Product.class)));
 
         List<Product> pageContent= products.subList(startIndex,endIndex);
 

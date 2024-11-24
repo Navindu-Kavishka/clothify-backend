@@ -1,13 +1,21 @@
 package com.nk.clothify_backend.service;
 
-import com.nk.clothify_backend.entity.*;
+import com.nk.clothify_backend.entity.AddressEntity;
+import com.nk.clothify_backend.entity.OrderEntity;
+import com.nk.clothify_backend.entity.OrderItemEntity;
+import com.nk.clothify_backend.entity.UserEntity;
 import com.nk.clothify_backend.exception.OrderException;
-import com.nk.clothify_backend.model.*;
+import com.nk.clothify_backend.model.Address;
+import com.nk.clothify_backend.model.Cart;
+import com.nk.clothify_backend.model.Order;
+import com.nk.clothify_backend.model.User;
 import com.nk.clothify_backend.repository.AddressRepository;
 import com.nk.clothify_backend.repository.OrderItemRepository;
 import com.nk.clothify_backend.repository.OrderRepository;
 import com.nk.clothify_backend.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.Hibernate;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +23,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -32,61 +41,76 @@ public class OrderServiceImpl implements OrderService{
 
 
     @Override
+    @Transactional
     public Order createOrder(User user, Address shippingAddress) {
-
+        // Save shipping address
         shippingAddress.setUserEntity(userService.mapUserToUserEntity(user));
-        AddressEntity saved = addressRepository.save(modelMapper.map(shippingAddress, AddressEntity.class));
-        user.getAddressEntities().add(saved);
-        UserEntity userEntity = modelMapper.map(user, UserEntity.class);
-        userRepository.save(userEntity);
+        AddressEntity savedAddress = addressRepository.save(modelMapper.map(shippingAddress, AddressEntity.class));
 
+        // Update user with new address
+        UserEntity userEntity = userService.mapUserToUserEntity(user);
+        userEntity.getAddressEntities().add(savedAddress);
+        userEntity = userRepository.save(userEntity);
+
+        // Get cart and create order items
         Cart cart = cartService.findUserCart(user.getId());
-        List<OrderItemEntity> orderItemsEntities = new ArrayList<>();
+        OrderEntity orderEntity = new OrderEntity();
+        orderEntity.setUserEntity(userEntity);
+        orderEntity.setShippingAddressEntity(savedAddress);
+        orderEntity.setTotalPrice(cart.getTotalPrice());
+        orderEntity.setTotalDiscountedPrice(cart.getTotalDiscountedPrice());
+        orderEntity.setDiscount(cart.getDiscount());
+        orderEntity.setTotalItem(cart.getTotalItem());
+        orderEntity.setOrderDate(LocalDateTime.now());
+        orderEntity.setOrderStatus("PENDING");
+        orderEntity.getPaymentDetails().setStatus("PENDING");
+        orderEntity.setCreatedAt(LocalDateTime.now());
 
-        for (CartItemEntity entity:cart.getCartItemEntities()) {
-            OrderItem orderItem = new OrderItem();
+        // Save order first to get ID
+        OrderEntity savedOrder = orderRepository.save(orderEntity);
 
-            orderItem.setPrice(entity.getPrice());
-            orderItem.setProductEntity(entity.getProductEntity());
-            orderItem.setQuantity(entity.getQuantity());
-            orderItem.setSize(entity.getSize());
-            orderItem.setUserId(entity.getUserId());
-            orderItem.setDiscountedPrice(entity.getDiscountedPrice());
+        // Create and map order items with proper order reference
+        List<OrderItemEntity> orderItems = cart.getCartItemEntities().stream()
+                .map(cartItem -> {
+                    OrderItemEntity orderItem = new OrderItemEntity();
+                    orderItem.setOrderEntity(savedOrder);
+                    orderItem.setPrice(cartItem.getPrice());
+                    orderItem.setProductEntity(cartItem.getProductEntity());
+                    orderItem.setQuantity(cartItem.getQuantity());
+                    orderItem.setSize(cartItem.getSize());
+                    orderItem.setUserId(cartItem.getUserId());
+                    orderItem.setDiscountedPrice(cartItem.getDiscountedPrice());
+                    return orderItem;
+                })
+                .collect(Collectors.toList());
 
-            OrderItemEntity savedEntity = orderItemRepository.save(modelMapper.map(orderItem, OrderItemEntity.class));
-            orderItemsEntities.add(savedEntity);
-        }
+        // Save all order items in one batch
+        orderItems = orderItemRepository.saveAll(orderItems);
+        savedOrder.setOrderItemEntities(orderItems);
 
-        Order createdOrder = new Order();
-        createdOrder.setUserEntity(userEntity);
-        createdOrder.setOrderItemEntities(orderItemsEntities);
-        createdOrder.setTotalPrice(cart.getTotalPrice());
-        createdOrder.setTotalDiscountedPrice(cart.getTotalDiscountedPrice());
-        createdOrder.setDiscount(cart.getDiscount());
-        createdOrder.setTotalItem(cart.getTotalItem());
-
-        createdOrder.setShippingAddressEntity(saved);
-        createdOrder.setOrderDate(LocalDateTime.now());
-        createdOrder.setOrderStatus("PENDING");
-        createdOrder.getPaymentDetails().setStatus("PENDING");
-        createdOrder.setCreatedAt(LocalDateTime.now());
-
-        OrderEntity savedOrder = orderRepository.save(modelMapper.map(createdOrder, OrderEntity.class));
-
-        for (OrderItemEntity entity:orderItemsEntities) {
-            entity.setOrderEntity(savedOrder);
-            orderItemRepository.save(entity);
-        }
+        // Clear cart after successful order creation
+        cartService.clearCart(cart.getId());
 
         return modelMapper.map(savedOrder, Order.class);
     }
 
+
     @Override
+    @Transactional
     public Order findOrderById(Long orderId) throws OrderException {
         Optional<OrderEntity> byId = orderRepository.findById(orderId);
 
-        if (byId.isPresent()){
-            return modelMapper.map(byId.get(), Order.class);
+        if (byId.isPresent()) {
+            OrderEntity orderEntity = byId.get();
+
+            // Force initialization of collections and related entities
+            List<OrderItemEntity> items = orderItemRepository.findByOrderEntity(orderEntity);
+            items.forEach(item -> Hibernate.initialize(item.getProductEntity()));
+
+            Order order = modelMapper.map(orderEntity, Order.class);
+            order.setOrderItemEntities(items);
+
+            return order;
         }
         throw new OrderException("order not exist with ID : "+orderId);
     }

@@ -6,6 +6,7 @@ import com.nk.clothify_backend.entity.CartEntity;
 import com.nk.clothify_backend.entity.CartItemEntity;
 import com.nk.clothify_backend.entity.ProductEntity;
 import com.nk.clothify_backend.entity.UserEntity;
+import com.nk.clothify_backend.exception.CartException;
 import com.nk.clothify_backend.exception.ProductException;
 import com.nk.clothify_backend.model.Cart;
 import com.nk.clothify_backend.model.CartItem;
@@ -13,6 +14,7 @@ import com.nk.clothify_backend.model.Product;
 import com.nk.clothify_backend.model.User;
 import com.nk.clothify_backend.repository.CartRepository;
 import com.nk.clothify_backend.request.AddItemRequest;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -64,9 +66,9 @@ public class CartServiceImpl implements CartService{
 
 
 
-            CartItem createdItem = cartItemService.createCartItem(mapper.convertValue(cartItem, CartItem.class));
+            CartItem createdItem = cartItemService.createCartItem(modelMapper.map(cartItem, CartItem.class));
 
-            cartEntity.getCartItemEntities().add(mapper.convertValue(createdItem, CartItemEntity.class));
+            cartEntity.getCartItemEntities().add(modelMapper.map(createdItem, CartItemEntity.class));
         }
         return "Item added to cart...";
     }
@@ -112,6 +114,18 @@ public class CartServiceImpl implements CartService{
         return cart;
 
     }
+
+    @Override
+    @Transactional
+    public void clearCart(Long cartId) {
+        CartEntity cart = cartRepository.findById(cartId)
+                .orElseThrow(() -> new CartException("Cart not found"));
+
+        // Clear all cart items
+        cart.getCartItemEntities().clear();
+        cartRepository.save(cart);
+    }
+
 
     public Cart mapToCart(CartEntity cartEntity) {
         Cart cart = new Cart();
