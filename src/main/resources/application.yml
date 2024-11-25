@@ -18,3 +18,9 @@ spring:
         serialization:
           fail-on-empty-beans: false
 
+
+razorpay:
+  api:
+    key: rzp_test_sg_sFtE4NlqhX431U
+    secret: PPHKUqellUcbdo
+
