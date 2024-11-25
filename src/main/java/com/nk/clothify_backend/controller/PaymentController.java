@@ -25,10 +25,10 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class PaymentController {
 
-    @Value("{razorpay.api.key}")
+    @Value("${razorpay.api.key}")
     String apiKey;
 
-    @Value("{razorpay.api.secret}")
+    @Value("${razorpay.api.secret}")
     String apiSecret;
 
     private final OrderService orderService;
@@ -78,8 +78,10 @@ public class PaymentController {
             throw new RazorpayException(e.getMessage());
         }
 
+
     }
 
+    @GetMapping("/payments")
     public ResponseEntity<ApiResponse> redirect(@RequestParam(name = "payment_id") String paymentId, @RequestParam(name = "order_id") Long orderId) throws OrderException, RazorpayException {
 
         Order order = orderService.findOrderById(orderId);
