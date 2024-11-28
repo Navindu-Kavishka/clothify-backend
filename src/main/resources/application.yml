@@ -19,8 +19,9 @@ spring:
           fail-on-empty-beans: false
 
 
-razorpay:
+stripe:
   api:
-    key: rzp_test_F7R3zW5SMz3vVq
-    secret: GCXjfbhQ2b1qPecwuOpy1Lox
+    key: sk_test_51QPKvgKYPXcpg3EWmiHyny3hwCzQNDGl0WOfmEqEi8gqrxNgSizpKYkKu1avxNOaF7iSN6ZCncnkxWr1jfTaTDmf00fH4BoEzH
+    webhook:
+      secret: whsec_7356cdecc142a7b29f2b377e374cae112e3e3937820af4ebeb76c54e8bf847fe
 
